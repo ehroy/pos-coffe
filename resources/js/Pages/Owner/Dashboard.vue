@@ -1,193 +1,123 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { useOwnerMenu } from '@/Composables/useMenuItems';
 import { Head, Link } from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     stats: Object,
+    recentOrders: Array,
+    lowStockIngredients: Array,
 });
 
-const menuItems = [
-    {
-        name: 'dashboard',
-        label: 'Dashboard',
-        href: route('owner.dashboard'),
-        route: 'owner.dashboard',
-    },
-    {
-        name: 'products',
-        label: 'Products',
-        href: route('owner.products'),
-        route: 'owner.products',
-    },
-    {
-        name: 'inventory',
-        label: 'Inventory',
-        href: route('owner.inventory'),
-        route: 'owner.inventory',
-    },
-    {
-        name: 'tables',
-        label: 'Tables',
-        href: route('owner.tables'),
-        route: 'owner.tables',
-    },
-    {
-        name: 'users',
-        label: 'Users',
-        href: route('owner.users'),
-        route: 'owner.users',
-    },
-];
+const menuItems = useOwnerMenu();
+
+const formatCurrency = (v) => 'Rp ' + new Intl.NumberFormat('id-ID').format(Number(v || 0));
+const currency = (v) => new Intl.NumberFormat('id-ID').format(Number(v || 0));
+
+const statusClass = (status) => ({
+    pending:    'bg-yellow-100 text-yellow-800',
+    accepted:   'bg-blue-100 text-blue-800',
+    processing: 'bg-orange-100 text-orange-800',
+    ready:      'bg-purple-100 text-purple-800',
+    completed:  'bg-green-100 text-green-800',
+    cancelled:  'bg-red-100 text-red-800',
+}[status] ?? 'bg-gray-100 text-gray-700');
 </script>
 
 <template>
     <Head title="Owner Dashboard" />
 
     <AppLayout title="Owner Dashboard" :menu-items="menuItems">
-        <!-- Welcome Card -->
-        <div class="bg-gradient-to-r from-coffee-600 to-coffee-800 rounded-lg shadow-lg p-8 text-white mb-6">
-            <h2 class="text-3xl font-bold mb-2">Welcome Back, Owner! ☕</h2>
-            <p class="text-coffee-100">Here's an overview of your coffee shop management system.</p>
+        <div class="mb-6 rounded-xl bg-gradient-to-br from-coffee-900 to-coffee-700 p-6 text-white shadow-lg">
+            <h2 class="text-2xl font-bold">Selamat Datang, Owner</h2>
+            <p class="mt-1 text-coffee-200">Ringkasan performa coffee shop hari ini.</p>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <!-- Total Users -->
-            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 mb-1">Total Users</p>
-                        <p class="text-3xl font-bold text-coffee-800">{{ stats.total_users }}</p>
-                        <p class="text-xs text-green-600 mt-1">
-                            <span class="font-semibold">{{ stats.active_users }}</span> active
-                        </p>
-                    </div>
-                    <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </div>
-                </div>
+        <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p class="text-sm text-gray-500">Penjualan Hari Ini</p>
+                <p class="mt-1 text-2xl font-bold text-slate-800">{{ formatCurrency(stats.total_sales_today) }}</p>
+                <p class="mt-0.5 text-xs text-gray-400">Penjualan bulan ini: {{ formatCurrency(stats.monthly_sales) }}</p>
             </div>
-
-            <!-- Active Tables -->
-            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 mb-1">Tables</p>
-                        <p class="text-3xl font-bold text-coffee-800">{{ stats.total_tables }}</p>
-                        <p class="text-xs text-green-600 mt-1">
-                            <span class="font-semibold">{{ stats.active_tables }}</span> active
-                        </p>
-                    </div>
-                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p class="text-sm text-gray-500">Order Aktif</p>
+                <p class="mt-1 text-2xl font-bold text-slate-800">{{ stats.active_orders }}</p>
+                <p class="mt-0.5 text-xs text-gray-400">Sedang diproses</p>
             </div>
-
-            <!-- Categories -->
-            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 mb-1">Categories</p>
-                        <p class="text-3xl font-bold text-coffee-800">{{ stats.total_categories }}</p>
-                        <p class="text-xs text-gray-500 mt-1">Product categories</p>
-                    </div>
-                    <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                        </svg>
-                    </div>
-                </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p class="text-sm text-gray-500">Stok Hampir Habis</p>
+                <p class="mt-1 text-2xl font-bold" :class="stats.low_stock_items > 0 ? 'text-red-600' : 'text-green-600'">
+                    {{ stats.low_stock_items }}
+                </p>
+                <p class="mt-0.5 text-xs text-gray-400">Bahan baku</p>
             </div>
-
-            <!-- Sales Today -->
-            <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 mb-1">Sales Today</p>
-                        <p class="text-3xl font-bold text-coffee-800">Rp 0</p>
-                        <p class="text-xs text-gray-500 mt-1">Coming in Phase 4</p>
-                    </div>
-                    <div class="w-14 h-14 bg-gold/20 rounded-full flex items-center justify-center">
-                        <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p class="text-sm text-gray-500">Total User</p>
+                <p class="mt-1 text-2xl font-bold text-slate-800">{{ stats.total_users }}</p>
+                <p class="mt-0.5 text-xs text-green-600">{{ stats.active_users }} aktif</p>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <h3 class="text-lg font-semibold text-coffee-800 mb-4">Quick Actions</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button class="flex flex-col items-center p-6 border-2 border-gray-200 rounded-lg hover:border-coffee-500 hover:bg-coffee-50 transition-all group">
-                    <div class="w-12 h-12 bg-coffee-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-coffee-500 transition-colors">
-                        <svg class="w-6 h-6 text-coffee-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-medium text-gray-700 group-hover:text-coffee-800">Add Product</span>
-                </button>
-
-                <button class="flex flex-col items-center p-6 border-2 border-gray-200 rounded-lg hover:border-coffee-500 hover:bg-coffee-50 transition-all group">
-                    <div class="w-12 h-12 bg-coffee-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-coffee-500 transition-colors">
-                        <svg class="w-6 h-6 text-coffee-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-medium text-gray-700 group-hover:text-coffee-800">View Reports</span>
-                </button>
-
-                <button class="flex flex-col items-center p-6 border-2 border-gray-200 rounded-lg hover:border-coffee-500 hover:bg-coffee-50 transition-all group">
-                    <div class="w-12 h-12 bg-coffee-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-coffee-500 transition-colors">
-                        <svg class="w-6 h-6 text-coffee-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-medium text-gray-700 group-hover:text-coffee-800">Manage Users</span>
-                </button>
-
-                <button class="flex flex-col items-center p-6 border-2 border-gray-200 rounded-lg hover:border-coffee-500 hover:bg-coffee-50 transition-all group">
-                    <div class="w-12 h-12 bg-coffee-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-coffee-500 transition-colors">
-                        <svg class="w-6 h-6 text-coffee-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-medium text-gray-700 group-hover:text-coffee-800">Settings</span>
-                </button>
-            </div>
+        <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <Link :href="route('owner.products')" class="group flex flex-col items-center rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:border-brand/40 hover:bg-brand/5">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 group-hover:bg-brand/15 group-hover:text-brand transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </span>
+                <span class="mt-2 text-sm font-medium text-slate-700">Produk</span>
+            </Link>
+            <Link :href="route('owner.inventory')" class="group flex flex-col items-center rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:border-brand/40 hover:bg-brand/5">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 group-hover:bg-brand/15 group-hover:text-brand transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                </span>
+                <span class="mt-2 text-sm font-medium text-slate-700">Inventory</span>
+            </Link>
+            <Link :href="route('owner.tables')" class="group flex flex-col items-center rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:border-brand/40 hover:bg-brand/5">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 group-hover:bg-brand/15 group-hover:text-brand transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </span>
+                <span class="mt-2 text-sm font-medium text-slate-700">Meja</span>
+            </Link>
+            <Link :href="route('owner.users')" class="group flex flex-col items-center rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:border-brand/40 hover:bg-brand/5">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 group-hover:bg-brand/15 group-hover:text-brand transition-colors">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </span>
+                <span class="mt-2 text-sm font-medium text-slate-700">Users</span>
+            </Link>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Recent Orders -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-coffee-800 mb-4">Recent Orders</h3>
-                <div class="text-center py-8 text-gray-500">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    <p>No orders yet</p>
-                    <p class="text-sm">Orders will appear here in Phase 4</p>
+        <div class="grid gap-6 lg:grid-cols-2">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 class="mb-4 font-semibold text-slate-800">Order Terbaru</h3>
+                <div v-if="recentOrders?.length" class="space-y-2">
+                    <div v-for="order in recentOrders" :key="order.id" class="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                        <div>
+                            <p class="font-medium text-slate-800">{{ order.order_number }}</p>
+                            <p class="text-xs text-gray-500">{{ order.table?.name || 'Kasir' }} · {{ order.items?.length }} item</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="rounded-full px-2 py-0.5 text-xs font-semibold" :class="statusClass(order.status)">{{ order.status }}</span>
+                            <p class="mt-0.5 text-xs font-semibold text-slate-700">Rp {{ currency(order.total) }}</p>
+                        </div>
+                    </div>
                 </div>
+                <p v-else class="py-6 text-center text-sm text-gray-500">Belum ada order hari ini.</p>
             </div>
 
-            <!-- Low Stock Alert -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-coffee-800 mb-4">Low Stock Alert</h3>
-                <div class="text-center py-8 text-gray-500">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                    <p>All stock levels are good</p>
-                    <p class="text-sm">Low stock alerts will appear here in Phase 3</p>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="mb-4 flex items-center justify-between">
+                    <h3 class="font-semibold text-slate-800">Stok Hampir Habis</h3>
+                    <Link :href="route('owner.inventory')" class="text-xs text-brand hover:underline">Lihat Semua</Link>
                 </div>
+                <div v-if="lowStockIngredients?.length" class="space-y-2">
+                    <div v-for="item in lowStockIngredients" :key="item.id" class="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                        <span class="font-medium text-slate-800">{{ item.name }}</span>
+                        <div class="text-right">
+                            <p class="font-semibold text-red-600">{{ item.current_stock }} {{ item.unit }}</p>
+                            <p class="text-xs text-gray-400">min: {{ item.minimum_stock }}</p>
+                        </div>
+                    </div>
+                </div>
+                <p v-else class="py-6 text-center text-sm text-green-600">Semua stok dalam kondisi baik.</p>
             </div>
         </div>
     </AppLayout>

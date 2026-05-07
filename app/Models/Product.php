@@ -27,6 +27,8 @@ class Product extends Model
         'is_stock_tracked' => 'boolean',
     ];
 
+    protected $appends = ['image_url'];
+
     protected static function boot()
     {
         parent::boot();
@@ -49,6 +51,11 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    public function recipes()
+    {
+        return $this->hasMany(ProductRecipe::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {
@@ -66,7 +73,8 @@ class Product extends Model
         if ($this->image) {
             return asset('storage/' . $this->image);
         }
-        return asset('images/placeholder-product.png');
+
+        return 'https://placehold.co/800x600/png?text=Coffee+POS';
     }
 
     public function getFormattedPriceAttribute()

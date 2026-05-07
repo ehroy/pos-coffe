@@ -36,4 +36,14 @@ class Table extends Model
     {
         return url("/table/{$this->qr_token}");
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }

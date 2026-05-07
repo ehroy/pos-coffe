@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,6 +44,12 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+            ],
+            'pricing' => [
+                'tax_enabled' => AppSetting::boolean('tax_enabled', true),
+                'tax_rate' => (float) AppSetting::getValue('tax_rate', '11'),
+                'service_charge_enabled' => AppSetting::boolean('service_charge_enabled', false),
+                'service_charge_rate' => (float) AppSetting::getValue('service_charge_rate', '0'),
             ],
         ];
     }

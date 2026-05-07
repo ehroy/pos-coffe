@@ -9,6 +9,7 @@ Phase 1 dari Coffee POS System telah berhasil diimplementasikan dengan lengkap! 
 ## ✅ Yang Sudah Diimplementasikan
 
 ### 1. **Backend Setup**
+
 - ✅ Laravel 13 dengan SQLite database
 - ✅ Laravel Breeze (Vue + Inertia.js + Sanctum)
 - ✅ Laravel Reverb untuk WebSocket (siap untuk Phase 6)
@@ -16,33 +17,39 @@ Phase 1 dari Coffee POS System telah berhasil diimplementasikan dengan lengkap! 
 - ✅ Barcode Generator (milon/barcode)
 
 ### 2. **Database & Migrations**
+
 - ✅ Modified `users` table dengan kolom `role` dan `is_active`
 - ✅ Created `tables` table untuk meja dengan QR token
 - ✅ Created `categories` table untuk kategori produk
 - ✅ Semua migrations berhasil dijalankan
 
 ### 3. **Models**
+
 - ✅ **User Model** - dengan role helpers (isOwner, isAdmin, isCashier, isKitchen, isWarehouse, hasRole)
 - ✅ **Table Model** - dengan auto-generate QR token
 - ✅ **Category Model** - dengan auto-generate slug
 
 ### 4. **Middleware**
+
 - ✅ **RoleMiddleware** - untuk role-based access control
 - ✅ **CheckActiveUser** - untuk memastikan user aktif
 - ✅ Middleware sudah terdaftar di `bootstrap/app.php`
 
 ### 5. **Controllers**
+
 - ✅ **Owner/DashboardController** - dashboard untuk owner
 - ✅ **Admin/DashboardController** - dashboard untuk admin
 - ✅ **Cashier/DashboardController** - dashboard untuk cashier
 - ✅ **Kitchen/DashboardController** - dashboard untuk kitchen staff
 
 ### 6. **Routes**
+
 - ✅ Role-based routing dengan middleware protection
 - ✅ Redirect logic setelah login berdasarkan role
 - ✅ Routes: `/owner/dashboard`, `/admin/dashboard`, `/cashier/dashboard`, `/kitchen/dashboard`
 
 ### 7. **Frontend**
+
 - ✅ Vue 3 + Inertia.js + Pinia
 - ✅ Tailwind CSS dengan Coffee Theme (brown, cream, charcoal, gold)
 - ✅ Pinia store untuk auth management
@@ -50,11 +57,13 @@ Phase 1 dari Coffee POS System telah berhasil diimplementasikan dengan lengkap! 
 - ✅ Dashboard pages untuk semua role (Owner, Admin, Cashier, Kitchen)
 
 ### 8. **Seeders**
+
 - ✅ **UserSeeder** - 5 users (owner, admin, cashier, kitchen, warehouse)
 - ✅ **TableSeeder** - 20 meja dengan QR token
 - ✅ **CategorySeeder** - 4 kategori (Coffee, Non Coffee, Food, Snack)
 
 ### 9. **Configuration**
+
 - ✅ `.env` updated dengan Coffee POS name, timezone Asia/Jakarta, locale ID
 - ✅ Reverb configuration untuk WebSocket
 - ✅ Broadcast connection set to `reverb`
@@ -65,13 +74,13 @@ Phase 1 dari Coffee POS System telah berhasil diimplementasikan dengan lengkap! 
 
 Gunakan credentials berikut untuk testing:
 
-| Role      | Email                      | Password  |
-|-----------|----------------------------|-----------|
-| Owner     | owner@coffeepos.test       | password  |
-| Admin     | admin@coffeepos.test       | password  |
-| Cashier   | cashier@coffeepos.test     | password  |
-| Kitchen   | kitchen@coffeepos.test     | password  |
-| Warehouse | warehouse@coffeepos.test   | password  |
+| Role      | Email                    | Password |
+| --------- | ------------------------ | -------- |
+| Owner     | owner@coffeepos.test     | password |
+| Admin     | admin@coffeepos.test     | password |
+| Cashier   | cashier@coffeepos.test   | password |
+| Kitchen   | kitchen@coffeepos.test   | password |
+| Warehouse | warehouse@coffeepos.test | password |
 
 ---
 
@@ -176,26 +185,31 @@ gold:      #d4af37
 ## 🔄 Role-Based Access
 
 ### Owner
+
 - Akses penuh ke semua fitur
 - Dashboard dengan overview lengkap
 - Routes: `/owner/dashboard`
 
 ### Admin
+
 - Manage products, inventory, reports, expenses, users
 - Dashboard dengan stats management
 - Routes: `/admin/dashboard`
 
 ### Cashier
+
 - POS, payment, orders
 - Dashboard dengan sales summary
 - Routes: `/cashier/dashboard`
 
 ### Kitchen
+
 - View orders realtime, update status
 - Dashboard dengan order queue
 - Routes: `/kitchen/dashboard`
 
 ### Warehouse
+
 - Manage stock, stock in/out
 - Sementara redirect ke admin dashboard
 - Routes: `/admin/dashboard`
@@ -205,6 +219,7 @@ gold:      #d4af37
 ## 📊 Database Stats
 
 Setelah seeding:
+
 - **Users**: 5 (1 owner, 1 admin, 1 cashier, 1 kitchen, 1 warehouse)
 - **Tables**: 20 (T001 - T020, semua dengan QR token unik)
 - **Categories**: 4 (Coffee, Non Coffee, Food, Snack)
@@ -214,6 +229,7 @@ Setelah seeding:
 ## 🧪 Testing
 
 ### Test Login
+
 ```bash
 # Test dengan tinker
 php artisan tinker
@@ -229,6 +245,7 @@ Category::all();
 ```
 
 ### Test Routes
+
 ```bash
 # List all routes
 php artisan route:list
@@ -241,6 +258,7 @@ php artisan route:list --path=admin
 ```
 
 ### Test Database
+
 ```bash
 # Show database info
 php artisan db:show
@@ -254,6 +272,7 @@ php artisan migrate:status
 ## 🐛 Troubleshooting
 
 ### Issue: Build Error
+
 ```bash
 # Clear cache dan rebuild
 npm run build
@@ -261,12 +280,14 @@ php artisan optimize:clear
 ```
 
 ### Issue: Database Error
+
 ```bash
 # Reset database
 php artisan migrate:fresh --seed
 ```
 
 ### Issue: Permission Error
+
 ```bash
 # Fix storage permissions
 chmod -R 775 storage bootstrap/cache
@@ -277,6 +298,7 @@ chmod -R 775 storage bootstrap/cache
 ## 📝 Next Steps (Phase 2)
 
 Phase 2 akan mencakup:
+
 - ✅ CRUD Category (sudah ada model & migration)
 - ⏳ CRUD Product
 - ⏳ CRUD Product Variant
@@ -307,6 +329,7 @@ Phase 2 akan mencakup:
 ## 📞 Support
 
 Jika ada pertanyaan atau issue:
+
 1. Check AGENTS.md untuk reference lengkap
 2. Check error logs di `storage/logs/laravel.log`
 3. Run `php artisan optimize:clear` untuk clear cache
